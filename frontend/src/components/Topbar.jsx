@@ -16,9 +16,14 @@ export default function Topbar({ data, live, period, setPeriod, showPeriod, open
         ))}
       </div>
       <div className="live">
-        <span className="live-state"><span className="live-dot" aria-hidden="true" />Live</span>
-        <span className="live-meta mono">{live.camerasOnline} of {live.cameraCount} cameras online</span>
-        <span className="live-meta mono">Last event {live.lastEventTime || 'None'}</span>
+        {data.clock.live ? (
+          <span className="live-state"><span className="live-dot" aria-hidden="true" />Live</span>
+        ) : (
+          // ?asOf= demo mode: say so, and link back to the live dashboard on the same page.
+          <span className="live-state">Demo<a className="live-exit" href={window.location.pathname + window.location.hash}>Go live</a></span>
+        )}
+        <span className="live-meta num">{live.camerasOnline} of {live.cameraCount} cameras online</span>
+        <span className="live-meta num">Last event {live.lastEventTime || 'None'}</span>
       </div>
       <button type="button" className="button">Export</button>
     </header>

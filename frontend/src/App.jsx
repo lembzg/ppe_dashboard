@@ -8,6 +8,7 @@ const AS_OF = (() => {
   const value = new URLSearchParams(window.location.search).get('asOf');
   return /^\d{4}-\d{2}-\d{2}$/.test(value || '') ? value : null;
 })();
+const LIVE_REFRESH_MS = 60 * 1000;
 
 function SignIn() {
   const [note, setNote] = useState(authLink.error || '');
@@ -87,7 +88,11 @@ export default function App() {
     loadDashboardData(user, AS_OF)
       .then((loaded) => { if (!cancelled) setData(loaded); })
       .catch((loadError) => { if (!cancelled) setError(loadError); });
-    return () => { cancelled = true; };
+    // Without asOf, reload every minute so the clock, today's figures and the charts stay current.
+    const timer = AS_OF ? null : setInterval(() => {
+      loadDashboardData(user, null).then((loaded) => { if (!cancelled) setData(loaded); }).catch(() => {});
+    }, LIVE_REFRESH_MS);
+    return () => { cancelled = true; clearInterval(timer); };
     // Reload only when the signed-in user changes, not on token refreshes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);

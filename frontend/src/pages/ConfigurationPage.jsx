@@ -247,7 +247,7 @@ export default function ConfigurationPage() {
             { key: 'status', label: 'Status', width: '220px', display: (row) => lastSeen(row, site.timezone) },
           ]}
           rows={siteDevices}
-          actionsWidth="200px"
+          actionsWidth="240px"
           newValues={{ serial: '', zone_id: siteZones[0]?.id, model: 'Jetson Orin Nano' }}
           deleteWarning={(row) => 'Delete ' + row.serial + '? Its incidents and recording sessions are deleted too, and the device can no longer report.'}
           rowActions={(row, { busy, run }) => (rotatingId === row.id ? (

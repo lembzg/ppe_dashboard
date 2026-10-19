@@ -48,8 +48,8 @@ export default function Sidebar({ pageKey, user }) {
 
       <div className="sidebar-user">
         <span className="avatar" aria-hidden="true">{initialsOf(user.name)}</span>
-        <div>
-          <div className="user-name">{user.name}</div>
+        <div className="user-details">
+          <div className="user-name" title={user.name}>{user.name}</div>
           {user.role && <div className="user-role">{user.role}</div>}
         </div>
         <a

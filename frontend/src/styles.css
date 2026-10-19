@@ -251,10 +251,17 @@ button {
   color: var(--text-1);
 }
 
+.user-details {
+  min-width: 0;
+}
+
 .user-name {
+  overflow: hidden;
   color: var(--text-1);
   font-weight: 500;
   line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-role {
@@ -451,12 +458,18 @@ button {
   color: var(--text-3);
 }
 
+.live-exit {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.live-exit:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 1399px) {
   .topbar {
     gap: 12px;
-  }
-  .live-meta.mono {
-    font-family: var(--font-sans);
   }
 }
 

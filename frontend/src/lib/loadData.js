@@ -158,7 +158,7 @@ export async function loadDashboardData(user, asOf = null) {
     currentSiteId: current.id,
     currentUser: { id: user.id, name: user.email, role: profile.role },
     scheduledReports: [],
-    clock: { date: now.date, time: now.time },
+    clock: { date: now.date, time: now.time, live: !asOf },
     dailyRecords,
   };
 }
