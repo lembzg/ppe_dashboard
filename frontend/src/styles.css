@@ -1056,10 +1056,8 @@ button {
 
 .clip {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   aspect-ratio: 16 / 9;
   border: 1px solid var(--border);
   background: var(--bg);
@@ -1067,46 +1065,18 @@ button {
   font-size: 12px;
 }
 
-.clip-play {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  background: none;
-  color: var(--text-2);
-  cursor: pointer;
+.clip-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--border);
+  background: #000;
 }
 
-.clip-play:hover {
-  background: var(--surface-2);
-  color: var(--text-1);
-}
-
-.scrubber {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
+.clip-caption {
+  margin: 8px 0 0;
   color: var(--text-3);
   font-size: 11px;
-}
-
-.scrubber-track {
-  position: relative;
-  flex: 1;
-  height: 2px;
-  background: var(--border-strong);
-}
-
-.scrubber-handle {
-  position: absolute;
-  top: -3px;
-  left: 0;
-  width: 2px;
-  height: 8px;
-  background: var(--text-2);
 }
 
 .details {
@@ -1253,4 +1223,131 @@ button {
   line-height: 1.25;
   vertical-align: bottom;
   padding-bottom: 8px;
+}
+
+/* Configuration -------------------------------------------------------- */
+
+.button:disabled,
+.link-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-danger {
+  border-color: var(--negative);
+  color: var(--negative);
+}
+
+.cell-input {
+  width: 100%;
+  min-width: 0;
+  height: 24px;
+  padding: 0 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12px;
+}
+
+.cell-input:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.cell-input.select {
+  min-width: 0;
+  padding-right: 24px;
+}
+
+.table tbody tr.is-editing td {
+  background: var(--surface-2);
+}
+
+.cell-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.confirm-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px var(--panel-padding);
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 12px;
+}
+
+.confirm-bar > span {
+  flex: 1 1 240px;
+}
+
+.form-error {
+  margin: 0;
+  padding: 8px var(--panel-padding);
+  border-top: 1px solid var(--border);
+  color: var(--negative);
+  font-size: 12px;
+}
+
+.secret-notice {
+  display: grid;
+  gap: 8px;
+  padding: 12px var(--panel-padding);
+  border-top: 1px solid var(--border);
+  background: var(--accent-muted);
+  font-size: 12px;
+}
+
+.secret-value {
+  padding: 6px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  word-break: break-all;
+  user-select: all;
+}
+
+.secret-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Sign in and status messages ---------------------------------------- */
+
+.sign-in {
+  display: grid;
+  gap: 12px;
+  max-width: 320px;
+  margin: 15vh auto 0;
+  padding: 0 16px;
+}
+
+.sign-in-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.sign-in-input {
+  padding: 8px;
+  background: var(--surface);
+  color: var(--text-1);
+  border: 1px solid var(--border-strong);
+  font: inherit;
+}
+
+.sign-in-note {
+  color: var(--negative);
+}
+
+.app-message {
+  max-width: 480px;
+  margin: 0;
+  padding: 32px;
 }

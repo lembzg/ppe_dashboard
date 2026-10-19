@@ -412,3 +412,11 @@ enabled = true
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+[functions.ingest]
+# Devices authenticate with their own key (x-device-serial / x-device-key), not a user JWT.
+verify_jwt = false
+
+[functions.admin-users]
+# Checks the caller's session itself (auth.getUser), then requires an admin profile.
+verify_jwt = false
