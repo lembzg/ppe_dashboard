@@ -50,15 +50,20 @@ async function loadConfig() {
     must(supabase.from('violation_types').select('id, code, label, severity_points').order('severity_points', { ascending: false })),
     must(supabase.from('profiles').select('id, email, role, created_at').order('email')),
   ]);
-  const recorded = await Promise.all(violationTypes.map((type) => supabase
-    .from('violations').select('id', { count: 'exact', head: true }).eq('violation_type_id', type.id)
-    .then(({ count, error }) => { if (error) throw new Error(friendlyError(error)); return count; })));
+  const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
+  const countSince = (type, sinceIso) => supabase
+    .from('violations').select('id', { count: 'exact', head: true }).eq('violation_type_id', type.id).gte('last_seen_at', sinceIso)
+    .then(({ count, error }) => { if (error) throw new Error(friendlyError(error)); return count; });
+  const recorded = await Promise.all(violationTypes.map(async (type) => ({
+    week: await countSince(type, daysAgo(7)),
+    month: await countSince(type, daysAgo(30)),
+  })));
   return {
     sites,
     zones,
     devices,
     shifts: shifts.map((shift) => ({ ...shift, starts_at: shift.starts_at.slice(0, 5), ends_at: shift.ends_at.slice(0, 5) })),
-    violationTypes: violationTypes.map((type, index) => ({ ...type, recorded: recorded[index] })),
+    violationTypes: violationTypes.map((type, index) => ({ ...type, recordedWeek: recorded[index].week, recorded: recorded[index].month })),
     users,
   };
 }
@@ -319,13 +324,14 @@ export default function ConfigurationPage() {
             { key: 'severity', label: 'Severity', width: '112px', display: (row) => <Severity severity={severityOf(row.severity_points)} /> },
             { key: 'ppe', label: 'PPE', width: '64px', display: (row) => (row.code.startsWith('ppe_') ? 'Yes' : <span className="text-3">No</span>) },
             { key: 'detected', label: 'Detected', width: '120px', display: (row) => (DETECTED_CODES.has(row.code) ? 'By cameras' : <span className="text-3">Not yet</span>) },
-            { key: 'recorded', label: 'Recorded', width: '96px', numeric: true, display: (row) => <span className="mono">{row.recorded}</span> },
+            { key: 'recordedWeek', label: 'Past week', width: '96px', numeric: true, display: (row) => <span className="mono">{row.recordedWeek}</span> },
+            { key: 'recorded', label: 'Past 30 days', width: '112px', numeric: true, display: (row) => <span className="mono">{row.recorded}</span> },
           ]}
           rows={config.violationTypes}
           newValues={{ label: '', code: 'ppe_', severity_points: 4 }}
           deleteWarning={(row) => [
             'Delete ' + row.label + '?',
-            row.recorded ? 'This also deletes its ' + plural(row.recorded, 'recorded violation') + ', and any incident left with no other violation.' : '',
+            'This also deletes every violation recorded with this type' + (row.recorded ? ' (' + plural(row.recorded, 'violation') + ' in the past 30 days, plus any older ones)' : ' (any older than 30 days)') + ', and any incident left with no other violation.',
             DETECTED_CODES.has(row.code) ? 'Cameras still detect ' + row.code + ': those detections are dropped until a type with this code is added again.' : '',
           ].filter(Boolean).join(' ')}
           onSave={async (values, row) => {

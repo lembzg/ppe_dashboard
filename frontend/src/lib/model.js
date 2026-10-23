@@ -30,7 +30,7 @@ export function createDerivations(data) {
   const violationTypeByName = new Map(data.violationTypes.map((type) => [type.name, type]));
 
   function deductionOf(incident) {
-    return data.severities[incident.severity].deduction;
+    return incident.points;
   }
 
   function severityRankOfType(typeName) {
@@ -104,7 +104,8 @@ export function createDerivations(data) {
   }
 
   function periodScore(dates, filter) {
-    return Math.round(mean(dates.map((dateKey) => dayScore(dateKey, filter))));
+    const incidents = dates.flatMap(incidentsOn);
+    return scoreFor(filter ? incidents.filter(filter) : incidents);
   }
 
   function summarise(incidents) {

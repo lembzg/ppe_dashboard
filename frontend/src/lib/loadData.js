@@ -4,13 +4,12 @@
  */
 import { supabase } from './supabase.js';
 import { addDays, byTime, datesBetween, firstOfPreviousMonth, localParts, mondayOf } from './dates.js';
-import { mean } from './format.js';
 
 const SEVERITIES = {
-  Critical: { rank: 4, deduction: 15 },
-  High: { rank: 3, deduction: 8 },
-  Medium: { rank: 2, deduction: 4 },
-  Low: { rank: 1, deduction: 2 },
+  Critical: { rank: 4 },
+  High: { rank: 3 },
+  Medium: { rank: 2 },
+  Low: { rank: 1 },
 };
 const ONLINE_WINDOW_MS = 10 * 60 * 1000;
 const PAGE_SIZE = 1000;
@@ -60,6 +59,8 @@ function incidentRecord(row, timeZone) {
       time: local.time,
       type: violations[0].label,
       severity: severityOf(violations[0].severity_points),
+      // Score = max(0, 100 - total points of every violation in the window).
+      points: violations.reduce((total, violation) => total + violation.severity_points, 0),
       zone: row.zones.name,
       camera: row.devices.serial,
       clip: clip ? { path: clip.storage_path, durationS: clip.duration_s, blurred: clip.blurred } : null,
@@ -83,8 +84,8 @@ function groupByDate(records) {
   return byDate;
 }
 
-function dayScore(incidents) {
-  return Math.max(0, 100 - incidents.reduce((total, incident) => total + SEVERITIES[incident.severity].deduction, 0));
+function scoreOf(incidents) {
+  return Math.max(0, 100 - incidents.reduce((total, incident) => total + incident.points, 0));
 }
 
 function periodScores(byDate, today) {
@@ -95,7 +96,7 @@ function periodScores(byDate, today) {
   };
   const scores = {};
   Object.keys(windows).forEach((period) => {
-    scores[period] = Math.round(mean(windows[period].map((dateKey) => dayScore(byDate.get(dateKey) || []))));
+    scores[period] = scoreOf(windows[period].flatMap((dateKey) => byDate.get(dateKey) || []));
   });
   return scores;
 }

@@ -134,7 +134,7 @@ organisations
 - Currently uses the **first site only** (`sites[0]`) for detail. Other sites contribute only scores for the ranking.
 
 ### Scoring (PLACEHOLDER, algorithm not decided)
-- Current placeholder: each day starts at 100, and each incident deducts a fixed amount by severity (Critical 15, High 8, Medium 4, Low 2), with a floor of 0. Week and month scores are the mean of the daily scores. Shift and zone scores apply the same rule to filtered incidents.
+- Score = max(0, 100 − total deductions). Each violation deducts its violation type's `severity_points`; an incident deducts the sum of its violations. Every window (day, shift, week, month) starts at 100 and subtracts only the violations inside it, floored at 0. Zone and shift scores apply the same rule to filtered incidents.
 - It's computed client-side in `model.js`, so the algorithm can be swapped in one place.
 - The data is already in place for a real algorithm: per-type `severity_points`, `people_observed` per day, shifts, zones, and `score_configs` (baseline, daily/weekly window), which is unused so far.
 
