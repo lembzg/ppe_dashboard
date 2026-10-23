@@ -156,7 +156,7 @@ organisations
 3. **Incident drawer**: plays the private clip via a signed URL (loading, unavailable and "no clip" states; pauses on close), with time, violation, severity, points deducted, zone, camera, shift, and **score after the event** (running score through the day).
 4. **Shifts**: a performance table (hours, score, incidents, high-risk count, leading violation, an "in progress" marker for the current shift), a **violations × shift matrix**, and a daily score per shift alongside the site score.
 5. **Zones**: a performance table (sorted worst first, with cameras), a **violations × zone matrix**, and a camera table (zone, online/offline, incident count, last event).
-6. **Reports**: site comparison ranked by score for today/week/month, with company average and median. **Scheduled reports and the "Dashboard benchmark" panel are placeholders** (the scheduled reports list is empty; the benchmark shows "Available once enough sites contribute data").
+6. **Reports**: site comparison ranked by score for today/week/month, with company average and median. **Scheduled reports and the "NODE benchmark" panel are placeholders** (the scheduled reports list is empty; the benchmark shows "Available once enough sites contribute data").
 7. **Configuration** (admin only): `EditableTable` components with inline add, edit and delete, error messages and delete confirmations, for:
    - **Sites** (name, timezone picker, zone count)
    - **Zones** per site (name, optional type, camera count)

@@ -25,7 +25,7 @@ function SignIn() {
 
   return (
     <form className="sign-in" onSubmit={onSubmit}>
-      <strong className="sign-in-title">Dashboard</strong>
+      <strong className="sign-in-title">NODE</strong>
       <input className="sign-in-input" name="email" type="email" placeholder="Email" required autoComplete="username" />
       <input className="sign-in-input" name="password" type="password" placeholder="Password" required autoComplete="current-password" />
       <button className="button" type="submit" disabled={busy}>Sign in</button>

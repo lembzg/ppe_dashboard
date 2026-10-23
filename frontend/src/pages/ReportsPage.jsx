@@ -58,7 +58,7 @@ export default function ReportsPage({ model }) {
             })}
           </Table>
         </Panel>
-        <Panel title="Dashboard benchmark">
+        <Panel title="NODE benchmark">
           <div className="panel-note">Available once enough sites contribute data</div>
         </Panel>
       </div>

@@ -13,7 +13,7 @@ const NAV_ITEMS = [
 export default function Sidebar({ pageKey, user }) {
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand"><span className="wordmark">Dashboard</span></div>
+      <div className="sidebar-brand"><span className="wordmark">NODE</span></div>
 
       <nav className="sidebar-nav" aria-label="Primary">
         {NAV_ITEMS.map((item) => (
