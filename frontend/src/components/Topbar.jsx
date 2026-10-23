@@ -7,7 +7,7 @@ export default function Topbar({ data, live, period, setPeriod, showPeriod, open
     <header className="topbar">
       <Scope data={data} openMenu={openMenu} setOpenMenu={setOpenMenu} />
       <div className="topbar-spacer" />
-      <span className="topbar-date mono">{formatDay(data.clock.date, { year: true })}</span>
+      <span className="topbar-date">{formatDay(data.clock.date, { year: true })}</span>
       <div className="segmented" role="group" aria-label="Period" hidden={!showPeriod}>
         {Object.keys(PERIOD_NAMES).map((key) => (
           <button key={key} type="button" aria-pressed={key === period} onClick={() => setPeriod(key)}>
