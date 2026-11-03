@@ -1,6 +1,7 @@
-ultralytics>=8.4,<9
-lap>=0.5.12
-opencv-python-headless>=4.10
-numpy>=1.26
+# Versions from the Colab run of Inference_Script.ipynb (scenario_tracker_v1_fix6).
+# Pinned because BoT-SORT tracking behaviour can change between ultralytics releases.
+ultralytics==8.4.176
+lap==0.5.13
+
+# Ingest client. Also pulled in by ultralytics; listed because ingest_client.py imports it directly.
 requests>=2.32
-python-dotenv>=1.0
