@@ -37,3 +37,40 @@ Outputs in `outputs/<run-name>/`: `annotated_scenario_tracker.mp4`,
 `frame_scenario_state.jsonl`, `scenario_events.json`, `scenario_summary.json`,
 and `path_segmentation/` (mask, isolated path, overlay). A run name can't be
 reused, so earlier results are never overwritten.
+
+## Reporting from the device agent
+
+The agent reports session metadata and one incident per event before its existing
+clip upload loop. The response in `report_response.json` maps episode IDs to
+backend incident IDs. `session_id.txt` stores this run's session identity.
+
+Apply `20261104170000_incident_episodes.sql`, then deploy the updated `ingest`
+function before reporting. The database now identifies incidents by episode,
+allowing multiple episodes for the same person. Older clients use a
+`track:<id>` fallback. Configure `person_near_vehicle` in the dashboard's
+violation types so the backend accepts proximity events.
+
+Recording timestamps come from the filename's final 14 digits. The timezone is
+`CAMERA_TIMEZONE` (default `Europe/London`). Alternatively set
+`RECORDING_STARTED_AT` to an ISO timestamp including offset. Person counts are
+tracks observed for at least one second, including non-violating tracks.
+
+The inference geometry/rider/motion bypass produces test alerts. Historical
+recordings appear at their recording date in the dashboard.
+
+To report only metadata from an existing run (no inference or clip upload):
+
+```sh
+python3 device_agent.py --run-dir outputs/first_agent_test --metadata-only
+```
+
+Deploy backend changes from the repository root, after checking the dry-run:
+
+```sh
+supabase db push --dry-run
+supabase db push
+supabase functions deploy ingest
+```
+
+The database migration must precede deployment of the function. These commands
+change the linked hosted project; they are not run automatically by the agent.

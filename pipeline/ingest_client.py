@@ -1,4 +1,5 @@
 import requests
+from config import load_config
 
 class IngestClient:
     def __init__(self, base_url, serial, key, timeout=30.0):
@@ -55,7 +56,7 @@ class IngestClient:
         return response.json()
 
     # Reports metadata of a session (Independent of clip)
-    def report_session(self, session_id, started_at, ended_at, people_observed):
+    def report_session(self, session_id, started_at, ended_at, people_observed, incidents, recording=None):
         response = requests.post(
             self.base_url + "/session",
             headers={
@@ -67,7 +68,8 @@ class IngestClient:
                 "started_at": started_at,
                 "ended_at": ended_at,
                 "people_observed": people_observed,
-                "incidents": [],
+                "incidents": incidents,
+                "recording": recording,
             },
             timeout=self.timeout,
         )
@@ -79,10 +81,11 @@ class IngestClient:
 
 
 if __name__ == "__main__":
+    settings = load_config()
     client = IngestClient(
-        base_url="https://ajlgnlkvnzdirowmbiqf.supabase.co/functions/v1/ingest",
-        serial="FMDC1_01",
-        key="1DIBhzkeKjS8_nFzfOwzIyB-kJtM1bwK6EDUsvQ4E3U",
+        base_url=settings["INGEST_URL"],
+        serial=settings["DEVICE_SERIAL"],
+        key=settings["DEVICE_KEY"],
     )
     print(client.heartbeat())
 

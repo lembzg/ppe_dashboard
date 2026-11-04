@@ -27,7 +27,7 @@ type ViolationInput = {
   vote_ratio?: number | null;
 };
 
-type IncidentInput = { track_id: number; violations: ViolationInput[] };
+type IncidentInput = { track_id: number; episode_id?: string; violations: ViolationInput[] };
 
 type SessionInput = {
   session_id: string;
@@ -117,10 +117,22 @@ async function reportSession(device: Device, body: SessionInput) {
   const types = await must(supabase.from('violation_types').select('id, code').eq('org_id', device.org_id));
   const typeIdByCode = new Map(types.map((type) => [type.code, type.id]));
   const reported = body.incidents ?? [];
+  const episodeIds = new Set<string>();
+  for (const incident of reported) {
+    if (!Number.isInteger(incident.track_id)) throw new HttpError(400, 'track_id must be an integer');
+    if (incident.episode_id !== undefined &&
+        (typeof incident.episode_id !== 'string' || !incident.episode_id.trim())) {
+      throw new HttpError(400, 'episode_id must be a non-empty string');
+    }
+    const episodeId = incident.episode_id ?? `track:${incident.track_id}`;
+    if (episodeIds.has(episodeId)) throw new HttpError(400, 'Duplicate episode_id in session');
+    episodeIds.add(episodeId);
+  }
   const skippedCodes = [...new Set(reported.flatMap((incident) => incident.violations.map((v) => v.code)))]
     .filter((code) => !typeIdByCode.has(code));
   const incidents = reported.map((incident) => ({
     ...incident,
+    episode_id: incident.episode_id ?? `track:${incident.track_id}`,
     violations: incident.violations.filter((v) => typeIdByCode.has(v.code)),
   }));
   if (skippedCodes.length) console.warn(`Device ${device.serial} reported unknown codes: ${skippedCodes.join(', ')}`);
@@ -150,22 +162,23 @@ async function reportSession(device: Device, body: SessionInput) {
         shift_id: shift ? shift.id : null,
         session_id: body.session_id,
         track_id: incident.track_id,
+        episode_id: incident.episode_id,
         started_at: startedAt,
         ended_at: maxIso(incident.violations.map((v) => v.last_seen_at)),
         status: 'closed',
       };
     });
 
-  let saved: { id: string; track_id: number }[] = [];
+  let saved: { id: string; track_id: number; episode_id: string }[] = [];
   if (incidentRows.length) {
     saved = await must(supabase
       .from('incidents')
-      .upsert(incidentRows, { onConflict: 'device_id,session_id,track_id' })
-      .select('id, track_id'));
+      .upsert(incidentRows, { onConflict: 'device_id,session_id,episode_id' })
+      .select('id, track_id, episode_id'));
 
-    const incidentIdByTrack = new Map(saved.map((row) => [row.track_id, row.id]));
+    const incidentIdByEpisode = new Map(saved.map((row) => [row.episode_id, row.id]));
     const violationRows = incidents.flatMap((incident) => incident.violations.map((v) => ({
-      incident_id: incidentIdByTrack.get(incident.track_id),
+      incident_id: incidentIdByEpisode.get(incident.episode_id),
       violation_type_id: typeIdByCode.get(v.code),
       first_seen_at: v.first_seen_at,
       last_seen_at: v.last_seen_at,

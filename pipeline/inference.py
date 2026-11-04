@@ -1873,6 +1873,12 @@ try:
 
             distance_m = pair["distance_m"]
 
+            # TEST ONLY: bypass geometry, rider and motion checks.
+            # Remove after testing; alerts from this bypass are test events.
+            geometry_usable = True
+            is_own_rider_vehicle = False
+            moving_context = True
+
             if is_own_rider_vehicle:
                 proximity_state = "SUPPRESSED_RIDER_ASSOCIATION"
                 pair_state["under_threshold_history"].append(0)
